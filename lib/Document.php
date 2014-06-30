@@ -7,6 +7,10 @@
  * should be implemented in the extended classes.
  */
 
+namespace btleffler\Phongorm;
+use PhongormException as Exception;
+use Collection;
+
 class Document extends ArrayObject {
 
 	public function __construct ($data = array()) {
