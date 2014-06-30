@@ -51,6 +51,7 @@ class Bars extends Collection {
 			 *		{ "_id": _bars_collection.thing_ids[N]_ }
 			 * 	]
 			 * })
+			 */
 			"Foos._id" => "this.foo_ids"
 		)
 	);
