@@ -46,9 +46,9 @@ class Bars extends Collection {
 			 * Mongo:
 			 * db.foos_collection.find({
 			 * 	'$or': [
-			 * 		{ "_id": _bars_collection.thing_ids[0]_ },
-			 *		{ "_id": _bars_collection.thing_ids[...]_ },
-			 *		{ "_id": _bars_collection.thing_ids[N]_ }
+			 * 		{ "_id": (bars_collection.thing_ids[0]) },
+			 *			...	,
+			 *		{ "_id": (bars_collection.thing_ids[N]) }
 			 * 	]
 			 * })
 			 */
