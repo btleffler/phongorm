@@ -19,6 +19,8 @@ class Collection extends MongoCursor implements ArrayAccess {
 	private static $connection;
 	private static $db;
 
+	protected $cachedRelationships = array();
+
 	public static function config ($set = array()) {
 		if (!count($set))
 			return $config;
@@ -245,7 +247,27 @@ class Collection extends MongoCursor implements ArrayAccess {
 		return $this->current();
 	}
 
+	private function _getRelationship ($offset) {
+		$relationships = static::$relationships;
+
+		if (!array_key_exists($offset, $relationships))
+			return false;
+		else
+			$rel = $relationship[$offset];
+
+		if ($relationship = $this->_getCachedRelationship($offset))
+			return $relationship;
+
+		// TODO: Implement the rest ;-)
+		// Generate the query to pass to the new Collection class constructor
+		// Save the query to $cachedRelationships
+		// Return the new Collection class
+	}
+
 	private function _get ($offset) {
+		if ($relationship = $this->_getRelationship($offset))
+			return $relationship;
+
 		$this->rewind();
 
 		do {
