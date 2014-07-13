@@ -97,14 +97,16 @@ class Collection extends MongoCursor implements ArrayAccess {
 			if (Collection::isDocument($value))
 				$value = $value->toArray();
 
-			if (!array_key_exists($key, $definitions))
-				continue;
+			// Array of subdocuments
+			$type = $definitions;
 
-			$type = $definitions[$key];
+			if (array_key_exists($key, $definitions))
+				$type = $definitions[$key];
 
+			// Subdocument
 			if (is_array($type))
 				$data[$key] = self::validateAgainst($value, $type);
-			else {
+			else { // Everything else
 				$type = preg_replace("/^Mongo/i", '', $type);
 
 				if (!method_exists("Collection", $type))
@@ -341,50 +343,53 @@ class Collection extends MongoCursor implements ArrayAccess {
 		return $var;
 	}
 
-	public static function Id ($var) {
-		return $var = self::castType($var, "MongoId");
+	public static function Id ($var = null) {
+		return self::castType($var, "MongoId");
 	}
 
 	public static function Code ($var) {
-		return $var = self::castType($var, "MongoCode");
+		return self::castType($var, "MongoCode");
 	}
 
-	public static function Date ($var) {
+	public static function Date ($var = false) {
 		if (is_string($var))
-			return $var = self::castType($var, "MongoDate", "strtotime");
+			return self::castType($var, "MongoDate", "strtotime");
 
 		if ($var instanceof DateTime)
-			return $var = self::castType($var->getTimestamp(), "MongoDate");
+			$var = $var->getTimestamp();
 
-		return $var = self::castType($var, "MongoDate");
+		if ($var === false)
+			$var = time();
+
+		return self::castType($var, "MongoDate");
 	}
 
 	public static function Regex ($var) {
-		return $var = self::castType($var, "MongoRegex");
+		return self::castType($var, "MongoRegex");
 	}
 
 	public static function BinData ($var) {
-		return $var = self::castType($var, "MongoBinData");
+		return self::castType($var, "MongoBinData");
 	}
 
 	public static function Int32 ($var) {
-		return $var = self::castType($var, "MongoInt32", "intval");
+		return self::castType($var, "MongoInt32", "intval");
 	}
 
 	public static function Int64 ($var) {
-		return $var = self::castType($var, "MongoInt64", "intval");
+		return self::castType($var, "MongoInt64", "intval");
 	}
 
 	public static function DBRef ($var) {
-		return $var = self::castType($var, "MongoDBRef");
+		return self::castType($var, "MongoDBRef");
 	}
 
-	public static function MinKey ($var) {
-		return $var = self::castType($var, "MongoMinKey");
+	public static function MinKey () {
+		return new MongoMinKey;
 	}
 
-	public static function MaxKey ($var) {
-		return $var = self::castType($var, "MongoMaxKey");
+	public static function MaxKey () {
+		return new MongoMaxKey;
 	}
 
 }
