@@ -268,7 +268,7 @@ class Collection extends MongoCursor implements ArrayAccess {
 		if ($relationship = $this->_getRelationship($offset))
 			return $relationship;
 
-		$this->rewind();
+		$start = $this->key();
 
 		do {
 			if ($offset == $this->key())
@@ -276,6 +276,15 @@ class Collection extends MongoCursor implements ArrayAccess {
 
 			$this->next();
 		} while ($this->valid());
+
+		$this->rewind();
+
+		do {
+			if ($offset == $this->key())
+				return $this->current();
+
+			$this->next();
+		} while ($this->key() !== $start);
 	}
 
 	private function _exists ($offset) {
