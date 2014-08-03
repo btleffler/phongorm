@@ -8,8 +8,8 @@
  */
 
 namespace btleffler\Phongorm;
-use PhongormException as Exception;
-use Collection;
+use btleffler\Phongorm\PhongormException as Exception;
+use btleffler\Phongorm\Collection;
 
 class Document extends ArrayObject {
 

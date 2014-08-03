@@ -8,8 +8,8 @@
  */
 
 namespace btleffler\Phongorm;
-use PhongormException as Exception;
-use Document;
+use btleffler\Phongorm\PhongormException as Exception;
+use btleffler\Phongorm\Document;
 
 class Collection extends MongoCursor implements ArrayAccess {
 
