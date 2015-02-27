@@ -7,9 +7,9 @@
  * Contains static methods to query MongoDB
  */
 
-namespace btleffler\Phongorm;
-use btleffler\Phongorm\PhongormException as Exception;
-use btleffler\Phongorm\Document;
+namespace Phongorm;
+use Phongorm\PhongormException as Exception;
+use Phongorm\Document;
 
 class Collection extends MongoCursor implements ArrayAccess {
 

@@ -7,10 +7,10 @@
  * One-To-Many, and One-To-One relationships for Documents and Collections.
  */
 
-namespace btleffler\Phongorm;
-use btleffler\Phongorm\PhongormException as Exception;
-use btleffler\Phongorm\Collection;
-use btleffler\Phongorm\Document;
+namespace Phongorm;
+use Phongorm\PhongormException as Exception;
+use Phongorm\Collection;
+use Phongorm\Document;
 
 class RelationshipManager {
 
@@ -26,7 +26,7 @@ class RelationshipManager {
 		}
 
 		if (!is_string($collectionClassName))
-			throw new Exception("Unknown collection class name for relationship.");
+			throw new Exception("Invalid collection class name for relationship.");
 
 		if (!class_exists($collectionClassName))
 			throw new Exception("Unknown collection class name for relationship.");

@@ -7,9 +7,9 @@
  * should be implemented in the extended classes.
  */
 
-namespace btleffler\Phongorm;
-use btleffler\Phongorm\PhongormException as Exception;
-use btleffler\Phongorm\Collection;
+namespace Phongorm;
+use Phongorm\PhongormException as Exception;
+use Phongorm\Collection;
 
 class Document extends ArrayObject {
 

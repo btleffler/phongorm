@@ -7,6 +7,6 @@
  * easy to tell that Phongorm is the issue.
  */
 
-namespace btleffler\Phongorm;
+namespace Phongorm;
 
 class PhongormException extends \Exception {}
