@@ -7,12 +7,17 @@
  * should be implemented in the extended classes.
  */
 
-namespace Phongorm;
+namespace Phongorm\Document;
+
 use Phongorm\PhongormException as Exception;
-use Phongorm\Collection;
+use \ArrayObject;
 
 class Document extends ArrayObject {
 
+	/**
+	 * Create new Phongorm Documents
+	 * @param array $data Data returned by a Mongo Query
+	 */
 	public function __construct ($data = array()) {
 		parent::__construct(
 			$data,
@@ -20,6 +25,11 @@ class Document extends ArrayObject {
 		);
 	}
 
+	/**
+	 * Get the Phongorm Collection class name related to the Phongorm Document class
+	 * @return String The name of the Phongorm Collection class related to the
+	 *                Phongorm Document class
+	 */
 	public static function collectionClassName () {
 		if (isset(static::$collectionClassName))
 			return static::$collectionClassName;

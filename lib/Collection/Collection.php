@@ -3,15 +3,21 @@
 /**
  * Collection Class
  * ================
- * Manipulate sets of Documents
  * Contains static methods to query MongoDB
+ * and instance methods to query sets of Documents
  */
 
-namespace Phongorm;
-use Phongorm\PhongormException as Exception;
-use Phongorm\Document;
+namespace Phongorm\Collection;
 
-class Collection extends MongoCursor implements ArrayAccess {
+use Phongomr\Phongorm;
+use Phongorm\PhongormException as Exception;
+use Phongorm\Document\Document;
+use Phongorm\Collection\Collection_Query;
+
+use \MongoCursor;
+use \ArrayAccess;
+
+class Collection extends Collection_Query implements ArrayAccess {
 
 	public static $document = array( "_id" => "Id" );
 
@@ -19,12 +25,7 @@ class Collection extends MongoCursor implements ArrayAccess {
 	private static $connection;
 	private static $db;
 
-	protected $cachedRelationships = array();
-
 	public static function config ($set = array()) {
-		if (!count($set))
-			return $config;
-
 		foreach ($set as $key => $prop)
 			self::$config[$key] = $prop;
 
@@ -96,7 +97,7 @@ class Collection extends MongoCursor implements ArrayAccess {
 
 	private static function validateAgainst ($data, $definitions) {
 		foreach($data as $key => &$value) {
-			if (Collection::isDocument($value))
+			if (Phongorm::isDocument($value))
 				$value = $value->toArray();
 
 			// Array of subdocuments
@@ -114,7 +115,7 @@ class Collection extends MongoCursor implements ArrayAccess {
 				if (!method_exists("Collection", $type))
 					throw new Exception("Unknown Type: " . $type);
 
-				$value = Collection::$type($value);
+				$value = Phongorm::$type($value);
 			}
 		}
 
@@ -182,12 +183,12 @@ class Collection extends MongoCursor implements ArrayAccess {
 
 		if (is_null($id)) {
 			throw new Exception(
-				"Unsafe use of Collection::updateOne() with no primary key."
+				"Unsafe use of Phongorm::updateOne() with no primary key."
 			);
 		}
 
 		$data = self::validate($data);
-		$id = Collection::Id($id);
+		$id = Phongorm::Id($id);
 
 		$result = self::mongoCollection()->update(
 			array( "_id" => $id ),
@@ -247,27 +248,7 @@ class Collection extends MongoCursor implements ArrayAccess {
 		return $this->current();
 	}
 
-	private function _getRelationship ($offset) {
-		$relationships = static::$relationships;
-
-		if (!array_key_exists($offset, $relationships))
-			return false;
-		else
-			$rel = $relationship[$offset];
-
-		if ($relationship = $this->_getCachedRelationship($offset))
-			return $relationship;
-
-		// TODO: Implement the rest ;-)
-		// Generate the query to pass to the new Collection class constructor
-		// Save the query to $cachedRelationships
-		// Return the new Collection class
-	}
-
 	private function _get ($offset) {
-		if ($relationship = $this->_getRelationship($offset))
-			return $relationship;
-
 		$start = $this->key();
 
 		do {
@@ -295,15 +276,15 @@ class Collection extends MongoCursor implements ArrayAccess {
 
 	private function _set ($offset, $value) {
 		throw new Exception(
-			"Tried to set " . $offset . " on " . self::collectionClassName() .
-			" but probably meant to set on " . self::documentClassName() . '.'
+			"Tried to set '" . $offset . "' on a " . self::collectionClassName() .
+			" but probably meant to set on a " . self::documentClassName() . '.'
 		);
 	}
 
 	private function _unset ($offset) {
 		throw new Exception(
-			"Tried to unset " . $offset . " on " . self::collectionClassName() .
-			" but probably meant to unset on " . self::documentClassName() . '.'
+			"Tried to unset '" . $offset . "' on a " . self::collectionClassName() .
+			" but probably meant to set on a " . self::documentClassName() . '.'
 		);
 	}
 
@@ -337,90 +318,6 @@ class Collection extends MongoCursor implements ArrayAccess {
 
 	public function __unset ($name) {
 		return $this->_unset($name);
-	}
-
-	// Helper functions
-	public static function isDocument ($var) {
-		return $var instanceof Document || is_subclass_of($var, "Document");
-	}
-
-	public static function isCollection ($var) {
-		return $var instanceof Collection || is_subclass_of($var, "Collection");
-	}
-
-	private static function castType ($var, $type, $format = false) {
-		if (!class_exists($type))
-			throw new Exception("Unknown Mongo Type: " . $type);
-
-		if ($format !== false && !is_callable($format)) {
-			throw new Exception(
-				"Cannot format value using: " . print_r($format, true)
-			);
-		}
-
-		if (Collection::isDocument($var))
-			$var = $var->to_array();
-
-		if (is_array($var)) {
-			foreach($var as $key => $value)
-				$var[$key] = self::castType($value, $type, $format);
-		} else {
-			if ($format)
-				$var = call_user_func($format, $var);
-
-			$var = $var instanceof $type ? $var : new $type($var);
-		}
-
-		return $var;
-	}
-
-	public static function Id ($var = null) {
-		return self::castType($var, "MongoId");
-	}
-
-	public static function Code ($var) {
-		return self::castType($var, "MongoCode");
-	}
-
-	public static function Date ($var = false) {
-		if (is_string($var))
-			return self::castType($var, "MongoDate", "strtotime");
-
-		if ($var instanceof DateTime)
-			$var = $var->getTimestamp();
-
-		if ($var === false)
-			$var = time();
-
-		return self::castType($var, "MongoDate");
-	}
-
-	public static function Regex ($var) {
-		return self::castType($var, "MongoRegex");
-	}
-
-	public static function BinData ($var) {
-		return self::castType($var, "MongoBinData");
-	}
-
-	public static function Int32 ($var) {
-		return self::castType($var, "MongoInt32", "intval");
-	}
-
-	public static function Int64 ($var) {
-		return self::castType($var, "MongoInt64", "intval");
-	}
-
-	public static function DBRef ($var) {
-		return self::castType($var, "MongoDBRef");
-	}
-
-	public static function MinKey () {
-		return new MongoMinKey;
-	}
-
-	public static function MaxKey () {
-		return new MongoMaxKey;
 	}
 
 }
