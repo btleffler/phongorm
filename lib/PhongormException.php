@@ -9,4 +9,8 @@
 
 namespace Phongorm;
 
-class PhongormException extends \Exception {}
+class PhongormException extends \Exception {
+
+
+
+}
