@@ -78,15 +78,6 @@ class Phongorm {
 	}
 
 	/**
-	 * MongoCode
-	 * @param Mixed $var Variable to be cast to MongoCode
-	 * @return A new MongoCode
-	 */
-	public static function Code ($var) {
-		return self::castType($var, "MongoCode");
-	}
-
-	/**
 	 * MongoDate
 	 * @param Mixed $var Variable to be cast to a MongoDate. Defaults to false for
 	 *                   time(). Accepts anything that strtotime() can handle, and
@@ -118,6 +109,15 @@ class Phongorm {
 	/*
 	 These following type casters probably aren't used very much
 	 */
+
+	/**
+	 * MongoCode
+	 * @param Mixed $var Variable to be cast to MongoCode
+	 * @return A new MongoCode
+	 */
+	public static function Code ($var) {
+		return self::castType($var, "MongoCode");
+	}
 
 	/**
 	 * MongoBinData
