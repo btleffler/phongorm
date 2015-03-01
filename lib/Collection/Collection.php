@@ -20,64 +20,6 @@ use \ArrayAccess;
 
 class Collection extends Collection_Query implements ArrayAccess {
 
-	public static $document = array( "_id" => "Id" );
-
-	private static $config;
-	private static $connection;
-	private static $db;
-
-	public static function config ($set = array()) {
-		foreach ($set as $key => $prop)
-			self::$config[$key] = $prop;
-
-		return $config;
-	}
-
-	protected static function connection () {
-		if (self::$connection)
-			return self::$connection;
-
-		return self::$connection = new MongoClient(self::$config);
-	}
-
-	protected static function db () {
-		if (self::$db)
-			return self::$db;
-
-		return self::$db = self::connection()->{self::$config["database"]};
-	}
-
-	public static function collectionName () {
-		if (isset(static::$collectionName))
-			return static::$collectionName;
-
-		$class = get_called_class();
-		return preg_replace("/Collection$/i", '', $class);
-	}
-
-	public static function documentClassName () {
-		if (isset(static::$documentClass))
-			return static::$documentClass;
-
-		$class = get_called_class() . "Document";
-
-		if (class_exists($class))
-			return $class;
-
-		return "Document";
-	}
-
-	public static function collectionClassName () {
-		return get_called_class();
-	}
-
-	public static function mongoCollection ($collection = false) {
-		if (is_string($collection))
-			return self::db()->$collection;
-
-		return self::db()->{self::collectionName()};
-	}
-
 	protected static function returnCollection ($query = array(), $fields = array()) {
 		$config = self::config();
 		$collection = self::collectionClassName();
@@ -94,40 +36,6 @@ class Collection extends Collection_Query implements ArrayAccess {
 		$className = self::documentClassName();
 
 		return new $className($data);
-	}
-
-	private static function validateAgainst ($data, $definitions) {
-		foreach($data as $key => &$value) {
-			if (Phongorm::isDocument($value))
-				$value = $value->toArray();
-
-			// Array of subdocuments
-			$type = $definitions;
-
-			if (array_key_exists($key, $definitions))
-				$type = $definitions[$key];
-
-			// Subdocument
-			if (is_array($type))
-				$data[$key] = self::validateAgainst($value, $type);
-			else { // Everything else
-				$type = preg_replace("/^Mongo/i", '', $type);
-
-				if (!method_exists("Collection", $type))
-					throw new Exception("Unknown Type: " . $type);
-
-				$value = Phongorm::$type($value);
-			}
-		}
-
-		return $data;
-	}
-
-	protected static function validate ($data) {
-		if (!isset(static::$document))
-			return $data;
-
-		return self::validateAgainst($data, static::$document);
 	}
 
 	// Document Manipulation Methods
