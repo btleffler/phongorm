@@ -8,7 +8,10 @@
 
 namespace Phongorm\Collection;
 
-class Collection_Config {
+use \ArrayAccess;
+use \MongoClient;
+
+class Collection_Config implements ArrayAccess {
 
 	/**
 	 * Default Document Descriptor

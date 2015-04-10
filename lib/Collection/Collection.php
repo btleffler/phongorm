@@ -9,16 +9,12 @@
 
 namespace Phongorm\Collection;
 
+use Phongorm\Collection\Collection_Validation;
 use Phongomr\Phongorm;
 use Phongorm\PhongormException as Exception;
 use Phongorm\Document\Document;
 
-use Phongorm\Collection\Collection_Query;
-
-use \MongoCursor;
-use \ArrayAccess;
-
-class Collection extends Collection_Query implements ArrayAccess {
+class Collection extends Collection_Validation {
 
 	protected static function returnCollection ($query = array(), $fields = array()) {
 		$config = self::config();

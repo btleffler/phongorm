@@ -2,10 +2,11 @@
 
 namespace Phongorm\Collection;
 
+use Phongorm\Collection\Collection_Config;
 use Phongrom\Phongorm;
 use Phongorm\PhongormException as Exception;
 
-class Collection_Validation {
+class Collection_Validation extends Collection_Config {
 
 	/**
 	 * Validates data agains the definitions provided.
